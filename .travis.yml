@@ -10,6 +10,9 @@ r_binary_packages:
     - oro.nifti
     - covr
 
+r_github_packages:
+    - cdgreenidge/brcbase
+
 after_success:
   - Rscript -e 'library(covr); codecov()'
 
