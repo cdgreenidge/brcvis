@@ -4,7 +4,7 @@ cache: packages
 
 env:
     global:
-        - CODECOV_TOKEN=59bc7bee-308d-431a-8263-65a5d6b623e1
+        - CODECOV_TOKEN=123b8195-aadc-49c8-8791-1b84f656d13c
 
 r_binary_packages:
     - oro.nifti
