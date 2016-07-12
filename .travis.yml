@@ -1,0 +1,16 @@
+language: r
+
+cache: packages
+
+env:
+    global:
+        - CODECOV_TOKEN=59bc7bee-308d-431a-8263-65a5d6b623e1
+
+r_binary_packages:
+    - oro.nifti
+    - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
+
+warnings_are_errors: true
