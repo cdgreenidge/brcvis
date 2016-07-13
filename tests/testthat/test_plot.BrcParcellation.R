@@ -27,6 +27,22 @@ test_that("the values in the array correspond to the partition", {
   expect_equal(arr, expected)
 })
 
+# test splitAlongDim()
+
+arr <- array(c(1, 2, 3, 4, 5, 6, 7, 8), dim=c(2, 2, 2))
+
+test_that("it splits an array along a dimension", {
+  expected <- list(array(c(1, 2, 3, 4), dim=c(2, 2)),
+                   array(c(5, 6, 7, 8), dim=c(2, 2)))
+  expect_equal(.splitAlongDim(arr, 3), expected)
+})
+
+test_that("you can choose the dimension along which to split", {
+  expected <- list(array(c(1, 2, 5, 6), dim=c(2, 2)),
+                   array(c(3, 4, 7, 8), dim=c(2, 2)))
+  expect_equal(.splitAlongDim(arr, 2), expected)
+})
+
 # test .removeZeroSlices()
 
 arr <- array(c(rep.int(0, 16),

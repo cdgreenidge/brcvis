@@ -16,6 +16,15 @@
   eval(call)
 }
 
+# This function borrowed from
+# http://stackoverflow.com/questions/20198751/three-dimensional-array-to-list
+# Thanks, internet!
+.splitAlongDim <- function(arr, dim) {
+  setNames(lapply(split(arr, arrayInd(seq_along(arr), dim(arr))[, dim]),
+                  array, dim=dim(arr)[-dim], dimnames(arr)[-dim]),
+           dimnames(arr)[[dim]])
+}
+
 .parcellationToArray <- function(parcellation) {
   data <- .factorToNumeric(parcellation$partition)
   array(data=data, dim=parcellation$dim3d)
