@@ -1,3 +1,7 @@
+.makeIndexSequence <- function(max, length) {
+  round(seq(1, max, length.out=length))
+}
+
 .removeZeroSlices <- function(arr, dim) {
   nonzero <- apply(arr, dim, function(xs) any(xs != 0))
 

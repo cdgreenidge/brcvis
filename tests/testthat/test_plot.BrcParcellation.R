@@ -62,3 +62,20 @@ test_that("we should be able to choose the dimension arbitrarily", {
   expected <- arr[ , c(2, 3), ]
   expect_equal(cropped, expected)
 })
+
+# test .makeIndexSequence()
+
+test_that("it should return a sequence of the user-specified length", {
+  seq <- .makeIndexSequence(max=15, length=13)
+  expect_equal(length(seq), 13)
+})
+
+test_that("it should return a vector of integers", {
+  seq <- .makeIndexSequence(max=15, length=13)
+  expect_equal(seq, as.integer(seq))
+})
+
+test_that("all of the values should be positive", {
+  seq <- .makeIndexSequence(max=15, length=13)
+  expect_true(all(seq > 0))
+})
