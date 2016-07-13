@@ -1,3 +1,7 @@
+.extractSlices <- function(arr, indices, dim) {
+  .splitAlongDim(arr, dim)[indices]
+}
+
 .makeIndexSequence <- function(max, length) {
   round(seq(1, max, length.out=length))
 }

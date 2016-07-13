@@ -79,3 +79,26 @@ test_that("all of the values should be positive", {
   seq <- .makeIndexSequence(max=15, length=13)
   expect_true(all(seq > 0))
 })
+
+# test .extractSlices()
+arr <- array(c(rep.int(0, 16),
+               0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 4, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 5, 6, 0, 0, 7, 8, 0, 0, 0, 0, 0,
+               rep.int(0, 16)),
+               dim=c(4, 4, 4))
+
+test_that("it should return a list of the same length as the indices list", {
+  slices <- .extractSlices(arr=arr, indices=c(2, 3), dim=1)
+  expect_equal(length(slices), 2)
+})
+
+test_that("it should contain elements whose dimensions are one less than arr", {
+  slices <- .extractSlices(arr=arr, indices=c(2, 3), dim=1)
+  dimensionLengths <- lapply(slices, function(x) length(dim(x)))
+  expect_true(all(dimensionLengths == length(dim(arr)) - 1))
+})
+
+test_that("it contains the slices corresponding to the indices", {
+  slices <- .extractSlices(arr=arr, indices=c(2, 3), dim=2)
+  expect_equal(slices, .splitAlongDim(arr, 2)[2:3])
+})
