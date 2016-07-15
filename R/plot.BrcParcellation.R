@@ -1,3 +1,46 @@
+plot.BrcParcellation <- function(x, y, view="saggital", numSlices,
+                                 colors=NULL, ...) {
+  views <- list(saggital=1, coronal=2, axial=3)
+  dimension <- views[[view]]
+
+  arr <- .parcellationToArray(x)
+  arr <- .removeZeroSlices(arr, dimension)
+  indices <- .makeIndexSequence(max=dim(arr)[dimension], length=numSlices)
+  slices <- .extractSlices(arr, indices, dimension)
+  numParcels <- length(levels(x$partition))
+  invisible(.plotSlices(slices, numParcels, colors))
+}
+
+.plotSlices <- function(slices, numParcels, colors) {
+  if (is.null(colors)) {
+    colors <- .defaultColors(numParcels)
+  }
+  layout <- .plotLayout(numSlices=length(slices))
+
+  maxParcel <- max(unlist(slices))
+
+  par(mfrow=c(layout$nrow, layout$ncol), mar=rep(0.2, 4), bg="black")
+  for (i in 1:length(slices)) {
+    image(slices[[i]],
+          asp=ncol(slices[[i]]) / nrow(slices[[i]]),
+          breaks=(0:(maxParcel + 1)) - 0.5,
+          bty="n",
+          col=colors,
+          xaxt="n",
+          yaxt="n")
+  }
+}
+
+.defaultColors <- function(numParcels) {
+  c("#000000FF", rainbow(numParcels - 1))
+}
+
+.plotLayout <- function(numSlices) {
+	nrow = ceiling(sqrt(numSlices / 2))
+	ncol = ceiling(numSlices / nrow)
+	list(nrow=nrow, ncol=ncol)
+}
+
 .extractSlices <- function(arr, indices, dim) {
   .splitAlongDim(arr, dim)[indices]
 }

@@ -102,3 +102,22 @@ test_that("it contains the slices corresponding to the indices", {
   slices <- .extractSlices(arr=arr, indices=c(2, 3), dim=2)
   expect_equal(slices, .splitAlongDim(arr, 2)[2:3])
 })
+
+# test .plotLayout()
+
+test_that("the product of nrow and ncol is larger than numSlices", {
+  layout <- .plotLayout(10)
+  expect_true(layout$nrow * layout$ncol >= 10)
+})
+
+# test .defaultColors()
+
+test_that("the first color is black", {
+  colors <- .defaultColors(5)
+  expect_equal(colors[[1]], "#000000FF")
+})
+
+test_that("it gives you one color for each parcel", {
+  colors <- .defaultColors(5)
+  expect_equal(length(colors), 5)
+})
