@@ -15,6 +15,10 @@
 #' @export
 plot.BrcParcellation <- function(x, numSlices, view="saggital", colors=NULL,
                                  ...) {
+  if ((numSlices %% 1 != 0) || (numSlices < 0)) {
+    stop("numSlices argument must be a positive integer")
+  }
+
   views <- list(saggital=1, coronal=2, axial=3)
   if (!(view %in% names(views))) {
     stop(c("view argument must be one of 'saggital', 'coronal', or 'axial'"))

@@ -1,9 +1,14 @@
 context("Test plot.BrcParcellation.R")
 
 # Test plot.BrcParcellation()
+parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(3, 2, 2))
+
+test_that("it errors if numSlices is not a positive integer", {
+  expect_error(p <- plot(parcel, numSlices=-3), "numSlices argument must be")
+  expect_error(p <- plot(parcel, numSlices=1.2), "numSlices argument must be")
+})
 
 test_that("it errors if the view is not saggital, coronal, or axial", {
-  parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(3, 2, 2))
   expect_error(plot(parcel, numSlices=4, view="nonexistent"),
                "view argument must be one of")
 })
