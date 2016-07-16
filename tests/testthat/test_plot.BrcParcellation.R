@@ -8,14 +8,14 @@ test_that("it errors if numSlices is not a positive integer", {
   expect_error(p <- plot(parcel, numSlices=1.2), "numSlices argument must be")
 })
 
-test_that("it errors if the view is not saggital, coronal, or axial", {
+test_that("it errors if the view is not sagittal, coronal, or axial", {
   expect_error(plot(parcel, numSlices=4, view="nonexistent"),
                "view argument must be one of")
 })
 
 test_that("it errors if the colors argument contains invalid colors", {
   colors <- c("all", "your", "base", "are", "belong", "to", "us", "lol")
-  expect_error(plot(parcel, numSlices=4, view="saggital", colors=colors),
+  expect_error(plot(parcel, numSlices=4, view="sagittal", colors=colors),
                "color argument contains invalid colors")
 })
 
