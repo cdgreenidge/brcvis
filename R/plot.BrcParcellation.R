@@ -28,7 +28,11 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
     colors <- .defaultColors(numParcels)
   } else if (!all(.isColor(colors))) {
     stop("color argument contains invalid colors")
+  } else if (.numParcels(x) != (length(colors) - 1)) {
+    stop(paste("colors argument must contain 1 more color than the number ",
+               "of parcels in the parcellation"))
   }
+
 
   dimension <- views[[view]]
 
@@ -38,6 +42,10 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   slices <- .extractSlices(arr, indices, dimension)
   numParcels <- length(levels(x$partition))
   invisible(.plotSlices(slices, numParcels, colors))
+}
+
+.numParcels <- function(parcellation) {
+  length(levels(parcellation$partition))
 }
 
 .isColor <- function(colors) {
