@@ -24,6 +24,12 @@ plot.BrcParcellation <- function(x, numSlices, view="saggital", colors=NULL,
     stop(c("view argument must be one of 'saggital', 'coronal', or 'axial'"))
   }
 
+  if (is.null(colors)) {
+    colors <- .defaultColors(numParcels)
+  } else if (!all(.isColor(colors))) {
+    stop("color argument contains invalid colors")
+  }
+
   dimension <- views[[view]]
 
   arr <- .parcellationToArray(x)
@@ -41,11 +47,7 @@ plot.BrcParcellation <- function(x, numSlices, view="saggital", colors=NULL,
 }
 
 .plotSlices <- function(slices, numParcels, colors) {
-  if (is.null(colors)) {
-    colors <- .defaultColors(numParcels)
-  }
   layout <- .plotLayout(numSlices=length(slices))
-
   maxParcel <- max(unlist(slices))
 
   graphics::par(mfrow=c(layout$nrow, layout$ncol), mar=rep(0.2, 4), bg="black")

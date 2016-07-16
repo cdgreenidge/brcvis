@@ -13,12 +13,17 @@ test_that("it errors if the view is not saggital, coronal, or axial", {
                "view argument must be one of")
 })
 
+test_that("it errors if the colors argument contains invalid colors", {
+  colors <- c("all", "your", "base", "are", "belong", "to", "us", "lol")
+  expect_error(plot(parcel, numSlices=4, view="saggital", colors=colors),
+               "color argument contains invalid colors")
+})
+
 # Test .isColor()
 
 test_that("it returns TRUE if the string is a valid color, and FALSE if not", {
   actual <- .isColor(c("asdf", "#000000"))
   expected <- c(FALSE, TRUE)
-  print(actual)
   expect_equal(actual, expected)
 })
 
