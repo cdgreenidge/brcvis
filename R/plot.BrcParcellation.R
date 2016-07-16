@@ -34,6 +34,12 @@ plot.BrcParcellation <- function(x, numSlices, view="saggital", colors=NULL,
   invisible(.plotSlices(slices, numParcels, colors))
 }
 
+.isColor <- function(colors) {
+  unname(sapply(colors, function(x) {
+    tryCatch(is.matrix(col2rgb(x)), error=function(e) FALSE)
+  }))
+}
+
 .plotSlices <- function(slices, numParcels, colors) {
   if (is.null(colors)) {
     colors <- .defaultColors(numParcels)

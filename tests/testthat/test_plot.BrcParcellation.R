@@ -13,6 +13,15 @@ test_that("it errors if the view is not saggital, coronal, or axial", {
                "view argument must be one of")
 })
 
+# Test .isColor()
+
+test_that("it returns TRUE if the string is a valid color, and FALSE if not", {
+  actual <- .isColor(c("asdf", "#000000"))
+  expected <- c(FALSE, TRUE)
+  print(actual)
+  expect_equal(actual, expected)
+})
+
 # Test .factorToNumeric()
 
 test_that("it should convert the factor to a numeric vector", {
