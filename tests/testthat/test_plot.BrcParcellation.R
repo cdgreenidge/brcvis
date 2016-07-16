@@ -1,5 +1,13 @@
 context("Test plot.BrcParcellation.R")
 
+# Test plot.BrcParcellation()
+
+test_that("it errors if the view is not saggital, coronal, or axial", {
+  parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(3, 2, 2))
+  expect_error(plot(parcel, numSlices=4, view="nonexistent"),
+               "view argument must be one of")
+})
+
 # Test .factorToNumeric()
 
 test_that("it should convert the factor to a numeric vector", {

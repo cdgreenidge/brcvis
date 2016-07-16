@@ -16,6 +16,10 @@
 plot.BrcParcellation <- function(x, numSlices, view="saggital", colors=NULL,
                                  ...) {
   views <- list(saggital=1, coronal=2, axial=3)
+  if (!(view %in% names(views))) {
+    stop(c("view argument must be one of 'saggital', 'coronal', or 'axial'"))
+  }
+
   dimension <- views[[view]]
 
   arr <- .parcellationToArray(x)
