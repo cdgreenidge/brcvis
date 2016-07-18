@@ -15,6 +15,8 @@
 #' @export
 plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
                                  ...) {
+  numParcels <- .numParcels(x)
+
   tryCatch({ brcbase::isValid(x) }, error=function(e) {
     stop(paste("Tried to plot invalid BrcParcellation object: ", e))
   })
