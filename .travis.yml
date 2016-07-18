@@ -6,6 +6,7 @@ r_binary_packages:
     - covr
     - ks
     - oro.nifti
+    - rgl
 
 r_github_packages:
     - cdgreenidge/brcbase
