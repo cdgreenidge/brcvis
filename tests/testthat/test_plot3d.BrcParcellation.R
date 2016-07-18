@@ -18,3 +18,10 @@ test_that("it converts an array to a list of shape values", {
   shapes <- list(shape0, shape1)
   expect_equal(.arrayToShapes(arr), shapes, check.attributes=FALSE)
 })
+
+# Test .smoothShapes()
+test_that("it returns a list of kernel density estimates", {
+  shapes <- .arrayToShapes(.parcellationToArray(parcel))
+  kdes <- .smoothShapes(shapes)
+  lapply(kdes, function(x) expect_equal(class(x), "kde"))
+})

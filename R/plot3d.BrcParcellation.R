@@ -8,6 +8,8 @@ plot3d.BrcParcellation <- function(x, ...) {
   })
 
   arr <- .parcellationToArray(x)
+  shapes <- .arrayToShapes(arr)
+  kdes <- .smoothShapes(shapes)
 }
 
 .arrayToShapes <- function(arr) {
@@ -15,5 +17,12 @@ plot3d.BrcParcellation <- function(x, ...) {
   shapes <- lapply(parcels, function(x) {
     which(arr == x, arr.ind=T)
   })
-  unname(shapes)
+}
+
+.smoothShapes <- function(shapes) {
+  lapply(shapes, function(x) {
+    bandwidth <- matrix(1, ncol=3, nrow=3)
+    diag(bandwidth) <- 3
+    ks::kde(x, H=bandwidth, compute.cont=TRUE)
+  })
 }
