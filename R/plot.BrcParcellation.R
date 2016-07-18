@@ -56,7 +56,7 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
 }
 
 .defaultColors <- function(numParcels) {
-  c("#000000FF", grDevices::rainbow(numParcels - 1))
+  c("#000000FF", grDevices::rainbow(numParcels))
 }
 
 .parcellationToArray <- function(parcellation) {

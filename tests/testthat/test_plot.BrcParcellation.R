@@ -45,9 +45,9 @@ test_that("the first color is black", {
   expect_equal(colors[[1]], "#000000FF")
 })
 
-test_that("it gives you one color for each parcel", {
+test_that("it gives you one color for each parcel plus black", {
   colors <- .defaultColors(5)
-  expect_equal(length(colors), 5)
+  expect_equal(length(colors), 6)
 })
 
 # Test .parcellationToArray()
