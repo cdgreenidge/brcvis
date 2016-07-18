@@ -15,6 +15,10 @@
 #' @export
 plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
                                  ...) {
+  tryCatch({ brcbase::isValid(x) }, error=function(e) {
+    stop(paste("Tried to plot invalid BrcParcellation object: ", e))
+  })
+
   if ((numSlices %% 1 != 0) || (numSlices < 0)) {
     stop("numSlices argument must be a positive integer")
   }

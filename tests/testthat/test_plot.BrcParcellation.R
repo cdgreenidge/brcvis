@@ -1,7 +1,12 @@
 context("Test plot.BrcParcellation.R")
 
 # Test plot.BrcParcellation()
-parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(3, 2, 2))
+parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 2, 2))
+
+test_that("it errors if x is an invalid BrcParcellation object", {
+  parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 3, 2))
+  expect_error(p <- plot(parcel, numSlices=3), "invalid BrcParcellation object")
+})
 
 test_that("it errors if numSlices is not a positive integer", {
   expect_error(p <- plot(parcel, numSlices=-3), "numSlices argument must be")
