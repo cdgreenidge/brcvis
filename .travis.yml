@@ -3,8 +3,9 @@ language: r
 cache: packages
 
 r_binary_packages:
-    - oro.nifti
     - covr
+    - ks
+    - oro.nifti
 
 r_github_packages:
     - cdgreenidge/brcbase
