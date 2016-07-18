@@ -1,11 +1,24 @@
 context("Test plot3d.BrcParcellation.R")
 
 # Test plot3d.BrcParcellation()
-parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 2, 2))
+parcel <- brcbase::BrcParcellation(partition=factor(c(1, 1, 1, 1, 0, 0, 0, 0)),
+                                   dim3d=c(2, 2, 2))
 
 test_that("it errors if x is an invalid BrcParcellation object", {
   parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 3, 2))
   expect_error(p <- plot3d(parcel, numSlices=3), "invalid BrcParcellation object")
+})
+
+test_that("it errors if the colors argument is the wrong length", {
+  colors <- c("#100000", "#220000", "#030000", "#400000", "#050000", "#600000")
+  expect_error(p <- plot(parcel, numSlices=4, colors=colors),
+               "colors argument must contain")
+})
+
+test_that("it errors if the colors argument contains invalid colors", {
+  colors <- c("all", "your", "base", "are", "belong", "to", "us", "lol")
+  expect_error(p <- plot(parcel, numSlices=4, view="sagittal", colors=colors),
+               "color argument contains")
 })
 
 # Test .arrayToShapes()

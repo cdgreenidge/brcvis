@@ -1,11 +1,20 @@
 plot3d <- function(x, ...) UseMethod("plot3d")
 
-plot3d.BrcParcellation <- function(x, ...) {
+plot3d.BrcParcellation <- function(x, colors=NULL, ...) {
   numParcels <- .numParcels(x)
 
   tryCatch({ brcbase::isValid(x) }, error=function(e) {
     stop(paste("Tried to plot invalid BrcParcellation object: ", e))
   })
+
+  if (is.null(colors)) {
+    colors <- .defaultColors(numParcels)
+  } else if (!all(.isColor(colors))) {
+    stop("color argument contains invalid colors")
+  } else if (.numParcels(x) != (length(colors) - 1)) {
+    stop(paste("colors argument must contain 1 more color than the number ",
+               "of parcels in the parcellation"))
+  }
 
   arr <- .parcellationToArray(x)
   shapes <- .arrayToShapes(arr)
