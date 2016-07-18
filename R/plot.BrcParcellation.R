@@ -40,12 +40,7 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   arr <- .removeZeroSlices(arr, dimension)
   indices <- .makeIndexSequence(max=dim(arr)[dimension], length=numSlices)
   slices <- .extractSlices(arr, indices, dimension)
-  numParcels <- length(levels(x$partition))
-  invisible(.plotSlices(slices, numParcels, colors))
-}
-
-.numParcels <- function(parcellation) {
-  length(levels(parcellation$partition))
+  invisible(.plotSlices(slices, numParcels(x), colors))
 }
 
 .isColor <- function(colors) {
@@ -54,38 +49,17 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   }))
 }
 
-.plotSlices <- function(slices, numParcels, colors) {
-  layout <- .plotLayout(numSlices=length(slices))
-  maxParcel <- max(unlist(slices))
-
-  graphics::par(mfrow=c(layout$nrow, layout$ncol), mar=rep(0.2, 4), bg="black")
-  for (i in 1:length(slices)) {
-    graphics::image(slices[[i]],
-                    asp=ncol(slices[[i]]) / nrow(slices[[i]]),
-                    breaks=(0:(maxParcel + 1)) - 0.5,
-                    bty="n",
-                    col=colors,
-                    xaxt="n",
-                    yaxt="n")
-  }
-}
-
 .defaultColors <- function(numParcels) {
   c("#000000FF", grDevices::rainbow(numParcels - 1))
 }
 
-.plotLayout <- function(numSlices) {
-	nrow = ceiling(sqrt(numSlices / 2))
-	ncol = ceiling(numSlices / nrow)
-	list(nrow=nrow, ncol=ncol)
+.parcellationToArray <- function(parcellation) {
+  data <- .factorToNumeric(parcellation$partition)
+  array(data=data, dim=parcellation$dim3d)
 }
 
-.extractSlices <- function(arr, indices, dim) {
-  .splitAlongDim(arr, dim)[indices]
-}
-
-.makeIndexSequence <- function(max, length) {
-  round(seq(1, max, length.out=length))
+.factorToNumeric <- function(xs) {
+  as.numeric(levels(xs))[xs]
 }
 
 .removeZeroSlices <- function(arr, dim) {
@@ -106,6 +80,40 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   eval(call)
 }
 
+.makeIndexSequence <- function(max, length) {
+  round(seq(1, max, length.out=length))
+}
+
+.extractSlices <- function(arr, indices, dim) {
+  .splitAlongDim(arr, dim)[indices]
+}
+
+.numParcels <- function(parcellation) {
+  length(levels(parcellation$partition))
+}
+
+.plotSlices <- function(slices, numParcels, colors) {
+  layout <- .plotLayout(numSlices=length(slices))
+  maxParcel <- max(unlist(slices))
+
+  graphics::par(mfrow=c(layout$nrow, layout$ncol), mar=rep(0.2, 4), bg="black")
+  for (i in 1:length(slices)) {
+    graphics::image(slices[[i]],
+                    asp=ncol(slices[[i]]) / nrow(slices[[i]]),
+                    breaks=(0:(maxParcel + 1)) - 0.5,
+                    bty="n",
+                    col=colors,
+                    xaxt="n",
+                    yaxt="n")
+  }
+}
+
+.plotLayout <- function(numSlices) {
+	nrow = ceiling(sqrt(numSlices / 2))
+	ncol = ceiling(numSlices / nrow)
+	list(nrow=nrow, ncol=ncol)
+}
+
 # This function borrowed from
 # http://stackoverflow.com/questions/20198751/three-dimensional-array-to-list
 # Thanks, internet!
@@ -115,11 +123,3 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
                   dimnames(arr)[[dim]])
 }
 
-.parcellationToArray <- function(parcellation) {
-  data <- .factorToNumeric(parcellation$partition)
-  array(data=data, dim=parcellation$dim3d)
-}
-
-.factorToNumeric <- function(xs) {
-  as.numeric(levels(xs))[xs]
-}

@@ -33,14 +33,16 @@ test_that("it returns TRUE if the string is a valid color, and FALSE if not", {
   expect_equal(actual, expected)
 })
 
-# Test .factorToNumeric()
+# test .defaultColors()
 
-test_that("it should convert the factor to a numeric vector", {
-  expect_equal(class(.factorToNumeric(factor(c(1, 2)))), "numeric")
+test_that("the first color is black", {
+  colors <- .defaultColors(5)
+  expect_equal(colors[[1]], "#000000FF")
 })
 
-test_that("the numbers should map to the factor levels", {
-  expect_equal(.factorToNumeric(factor(c(0, 2, 3))), c(0, 2, 3))
+test_that("it gives you one color for each parcel", {
+  colors <- .defaultColors(5)
+  expect_equal(length(colors), 5)
 })
 
 # Test .parcellationToArray()
@@ -54,26 +56,20 @@ test_that("the dims of the array should be the dims of the parcellation", {
   expect_equal(dim(arr), c(2, 2, 2))
 })
 
+# Test .factorToNumeric()
+
+test_that("it should convert the factor to a numeric vector", {
+  expect_equal(class(.factorToNumeric(factor(c(1, 2)))), "numeric")
+})
+
+test_that("the numbers should map to the factor levels", {
+  expect_equal(.factorToNumeric(factor(c(0, 2, 3))), c(0, 2, 3))
+})
+
 test_that("the values in the array correspond to the partition", {
   arr <- .parcellationToArray(parcel)
   expected <- array(c(0, 0, 1, 1, 2, 2, 3, 3), dim=c(2, 2, 2))
   expect_equal(arr, expected)
-})
-
-# test splitAlongDim()
-
-arr <- array(c(1, 2, 3, 4, 5, 6, 7, 8), dim=c(2, 2, 2))
-
-test_that("it splits an array along a dimension", {
-  expected <- list(array(c(1, 2, 3, 4), dim=c(2, 2)),
-                   array(c(5, 6, 7, 8), dim=c(2, 2)))
-  expect_equal(.splitAlongDim(arr, 3), expected)
-})
-
-test_that("you can choose the dimension along which to split", {
-  expected <- list(array(c(1, 2, 5, 6), dim=c(2, 2)),
-                   array(c(3, 4, 7, 8), dim=c(2, 2)))
-  expect_equal(.splitAlongDim(arr, 2), expected)
 })
 
 # test .removeZeroSlices()
@@ -136,6 +132,13 @@ test_that("it contains the slices corresponding to the indices", {
   expect_equal(slices, .splitAlongDim(arr, 2)[2:3])
 })
 
+# test .numParcels()
+test_that("it gets the number of unique parcels in a parcellation", {
+  partition <- factor(c(0, 0, 1, 2, 3, 4, 5, 6))
+  parcellation <- brcbase::BrcParcellation(dim=c(2, 2, 2), partition=partition)
+  expect_equal(.numParcels(parcellation), 7)
+})
+
 # test .plotLayout()
 
 test_that("the product of nrow and ncol is larger than numSlices", {
@@ -143,14 +146,19 @@ test_that("the product of nrow and ncol is larger than numSlices", {
   expect_true(layout$nrow * layout$ncol >= 10)
 })
 
-# test .defaultColors()
+# test splitAlongDim()
 
-test_that("the first color is black", {
-  colors <- .defaultColors(5)
-  expect_equal(colors[[1]], "#000000FF")
+arr <- array(c(1, 2, 3, 4, 5, 6, 7, 8), dim=c(2, 2, 2))
+
+test_that("it splits an array along a dimension", {
+  expected <- list(array(c(1, 2, 3, 4), dim=c(2, 2)),
+                   array(c(5, 6, 7, 8), dim=c(2, 2)))
+  expect_equal(.splitAlongDim(arr, 3), expected)
 })
 
-test_that("it gives you one color for each parcel", {
-  colors <- .defaultColors(5)
-  expect_equal(length(colors), 5)
+test_that("you can choose the dimension along which to split", {
+  expected <- list(array(c(1, 2, 5, 6), dim=c(2, 2)),
+                   array(c(3, 4, 7, 8), dim=c(2, 2)))
+  expect_equal(.splitAlongDim(arr, 2), expected)
 })
+
