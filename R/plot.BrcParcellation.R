@@ -51,7 +51,7 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
 
 .isColor <- function(colors) {
   unname(sapply(colors, function(x) {
-    tryCatch(is.matrix(col2rgb(x)), error=function(e) FALSE)
+    tryCatch(is.matrix(grDevices::col2rgb(x)), error=function(e) FALSE)
   }))
 }
 
