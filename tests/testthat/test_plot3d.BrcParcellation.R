@@ -24,11 +24,9 @@ test_that("it errors if the colors argument contains invalid colors", {
 # Test .arrayToShapes()
 test_that("it converts an array to a list of shape values", {
   arr <- array(data=c(0, 1, 1, 0, 1, 0, 0, 1), dim=c(2, 2, 2))
-  shape0 <- t(matrix(data=c(1, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2), nrow=3,
-                     ncol=4))
   shape1 <- t(matrix(data=c(2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 2), nrow=3,
                      ncol=4))
-  shapes <- list(shape0, shape1)
+  shapes <- list(shape1)
   expect_equal(.arrayToShapes(arr), shapes, check.attributes=FALSE)
 })
 

@@ -141,7 +141,7 @@ test_that("it contains the slices corresponding to the indices", {
 test_that("it gets the number of unique parcels in a parcellation", {
   partition <- factor(c(0, 0, 1, 2, 3, 4, 5, 6))
   parcellation <- brcbase::BrcParcellation(dim=c(2, 2, 2), partition=partition)
-  expect_equal(.numParcels(parcellation), 7)
+  expect_equal(.numParcels(parcellation), 6)
 })
 
 # test .plotLayout()
