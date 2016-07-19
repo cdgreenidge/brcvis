@@ -36,3 +36,43 @@ test_that("it returns a list of kernel density estimates", {
   kdes <- .smoothShapes(shapes)
   lapply(kdes, function(x) expect_equal(class(x), "kde"))
 })
+
+# Test .rglView()
+
+test_that("it returns the correct view matrix for the sagittal view", {
+  mat <- matrix(c(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1), nrow=4,
+                ncol=4)
+  expect_equal(.rglView("sagittal"), mat)
+})
+
+test_that("it returns the correct view matrix for the saggital_reversed view", {
+  mat <- matrix(c(0, 0, -1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1), nrow=4,
+                ncol=4)
+  expect_equal(.rglView("sagittal_reversed"), mat)
+})
+
+test_that("it returns the correct view matrix for the coronal view", {
+  mat <- matrix(c(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1), nrow=4,
+                ncol=4)
+  expect_equal(.rglView("coronal"), mat)
+})
+
+test_that("it returns the correct view matrix for the coronal_reversed view", {
+  mat <- matrix(c(-1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1), nrow=4,
+                ncol=4)
+  expect_equal(.rglView("coronal_reversed"), mat)
+})
+
+test_that("it returns the correct view matrix for the axial view", {
+  expect_equal(.rglView("axial"), diag(4))
+})
+
+test_that("it returns the correct view matrix for the axial_reversed view", {
+  mat <- matrix(c(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1), nrow=4,
+                ncol=4)
+  expect_equal(.rglView("axial_reversed"), mat)
+})
+
+test_that("it errors if the view is not found", {
+  expect_error(.rglView("mealybug"), "view argument must be")
+})
