@@ -4,7 +4,7 @@
 \alias{plot3d.BrcParcellation}
 \title{3D Plotting for a BrcParcellation Object}
 \usage{
-\method{plot3d}{BrcParcellation}(x, view = "saggital", colors = NULL, ...)
+\method{plot3d}{BrcParcellation}(x, view = "sagittal", colors = NULL, ...)
 }
 \arguments{
 \item{x}{the BrcParcellation object}
