@@ -1,6 +1,7 @@
-View <- function(center, maxCenter, scale, minScale) {
+View <- function(center, maxCenter, scale, minScale, selectedView="coronal") {
     structure(list(center=center, maxCenter=maxCenter,
-                   scale=scale, minScale=minScale), class="View")
+                   scale=scale, minScale=minScale, selectedView=selectedView),
+              class="View")
 }
 
 isValid <- function(obj) UseMethod("isValid")
@@ -10,7 +11,9 @@ isValid.View <- function(obj) {
         all(obj$center <= obj$maxCenter),
         obj$scale > 0,
         obj$scale <= 1,
-        obj$scale >= obj$minScale)
+        obj$scale >= obj$minScale,
+        all(obj$selectedView %in% c("coronal", "sagittal", "axial"))
+    )
 }
 
 renderer <- function(obj) UseMethod("renderer")
@@ -36,12 +39,15 @@ renderer.BrcFmri <- function(mri) {
                       col.main="white",
                       col.sub="white",
                       fg="white")
+        titleColors <- list(coronal="white", sagittal="white", axial="white")
+        titleColors[[view$selectedView]] <- "red"
+        print(titleColors)
 
         ## Render coronal slice
         xlims <- c(prismMin[1], prismMax[1])
         ylims <- c(prismMin[3], prismMax[3])
         .drawImage(slices[["coronal"]], xlims, ylims, zlims)
-        graphics::title("Coronal")
+        graphics::title("Coronal", col.main=titleColors$coronal)
         .drawCrossHairs(view$center[1], view$center[3])
         .drawDirectionLabels(right="L", top="S", left="R", bottom="I",
                              xlims=xlims, ylims=ylims)
@@ -50,7 +56,7 @@ renderer.BrcFmri <- function(mri) {
         xlims <- c(prismMin[2], prismMax[2])
         ylims <- c(prismMin[3], prismMax[3])
         .drawImage(slices[["sagittal"]], xlims, ylims, zlims)
-        graphics::title("Sagittal")
+        graphics::title("Sagittal", col=titleColors$sagittal)
         .drawCrossHairs(view$center[2], view$center[3])
         .drawDirectionLabels(right="A", top="S", left="P", bottom="I",
                              xlims=xlims, ylims=ylims)
@@ -59,7 +65,7 @@ renderer.BrcFmri <- function(mri) {
         xlims <- c(prismMin[1], prismMax[1])
         ylims <- c(prismMin[2], prismMax[2])
         .drawImage(slices[["axial"]], xlims, ylims, zlims)
-        graphics::title("Axial")
+        graphics::title("Axial", col=titleColors$axial)
         .drawCrossHairs(view$center[1], view$center[2])
         .drawDirectionLabels(right="L", top="A", left="R", bottom="P",
                              xlims=xlims, ylims=ylims)

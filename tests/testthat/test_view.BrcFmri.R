@@ -31,6 +31,12 @@ test_that("it has a minScale field", {
     expect_equal(view$minScale, 0.1)
 })
 
+test_that("it has a selectedView filed", {
+    view <- View(center=c(1, 2, 1), maxCenter=c(10, 10, 10), scale=0.5,
+                 minScale=0.1, selectedView="axial")
+    expect_equal(view$selectedView, "axial")
+})
+
 ### Test isValid.View()
 
 test_that("it checks if the center is within its bounds", {
@@ -60,6 +66,12 @@ test_that("it checks if the scale is less than or equal to 1", {
 test_that("it checks if the scale is greater than minScale", {
     view <- View(center=c(1, 2, 3), maxCenter=c(10, 10, 10), scale=0.001,
                  minScale=0.01)
+    expect_error(isValid(view))
+})
+
+test_that("it checks if selectedView is coronal, sagittal, or axial", {
+    view <- View(center=c(1, 2, 3), maxCenter=c(10, 10, 10), scale=1,
+                 minScale=0.01, selectedView="foobar")
     expect_error(isValid(view))
 })
 
