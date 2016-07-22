@@ -17,7 +17,7 @@ renderer <- function(obj) UseMethod("renderer")
 
 renderer.BrcFmri <- function(mri) {
     arr <- brcbase::data2dTo4d(mri$data2d, mri$parcellation)
-    zlim <- c(min(arr), max(arr))
+    zlims <- c(min(arr), max(arr))
 
     function(view) {
         slices <- list(
@@ -25,8 +25,9 @@ renderer.BrcFmri <- function(mri) {
             sagittal=arr[view$center[1], , , view$center[4]],
             axial=arr[ , , view$center[3], view$center[4]]
         )
-        prismMin <- c(0, 0, 0, 0)
-        prismMax <- view$maxCenter
+        sideLengths <- view$maxCenter * view$scale
+        prismMin <- view$center - sideLengths / 2
+        prismMax <- view$center + sideLengths / 2
 
         graphics::par(mfrow=c(2, 2),
                       bg="black",
@@ -37,42 +38,47 @@ renderer.BrcFmri <- function(mri) {
                       fg="white")
 
         ## Render coronal slice
-        .drawImage(slices[["coronal"]], zlim)
+        xlims <- c(prismMin[1], prismMax[1])
+        ylims <- c(prismMin[3], prismMax[3])
+        .drawImage(slices[["coronal"]], xlims, ylims, zlims)
         graphics::title("Coronal")
         .drawCrossHairs(view$center[1], view$center[3])
         .drawDirectionLabels(right="L", top="S", left="R", bottom="I",
-                             xlims=c(prismMin[1], prismMax[1]),
-                             ylims=c(prismMin[3], prismMax[3]))
+                             xlims=xlims, ylims=ylims)
 
         ## Render sagittal slice
-        .drawImage(slices[["sagittal"]], zlim)
+        xlims <- c(prismMin[2], prismMax[2])
+        ylims <- c(prismMin[3], prismMax[3])
+        .drawImage(slices[["sagittal"]], xlims, ylims, zlims)
         graphics::title("Sagittal")
         .drawCrossHairs(view$center[2], view$center[3])
         .drawDirectionLabels(right="A", top="S", left="P", bottom="I",
-                             xlims=c(prismMin[2], prismMax[2]),
-                             ylims=c(prismMin[3], prismMax[3]))
+                             xlims=xlims, ylims=ylims)
 
         ## Render axial slice
-        .drawImage(slices[["axial"]], zlim)
+        xlims <- c(prismMin[1], prismMax[1])
+        ylims <- c(prismMin[2], prismMax[2])
+        .drawImage(slices[["axial"]], xlims, ylims, zlims)
         graphics::title("Axial")
         .drawCrossHairs(view$center[1], view$center[2])
         .drawDirectionLabels(right="L", top="A", left="R", bottom="P",
-                             xlims=c(prismMin[1], prismMax[1]),
-                             ylims=c(prismMin[2], prismMax[2]))
+                             xlims=xlims, ylims=ylims)
     }
 }
 
-.drawImage <- function(img, zlim) {
+.drawImage <- function(img, xlims, ylims, zlims) {
     graphics::image(x=1:dim(img)[1],
-                    y=1:dim(img)[2],
-                    z=img,
                     bty="n",
                     col=grDevices::grey(seq(0, 1, length=256)),
                     xaxt="n",
-                    yaxt="n",
                     xlab="",
+                    xlim=xlims,
+                    y=1:dim(img)[2],
+                    yaxt="n",
                     ylab="",
-                    zlim=zlim)
+                    ylim=ylims,
+                    z=img,
+                    zlim=zlims)
 }
 
 .drawCrossHairs <- function(x, y) {
