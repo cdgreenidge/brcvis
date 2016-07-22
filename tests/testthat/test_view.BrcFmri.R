@@ -62,3 +62,13 @@ test_that("it checks if the scale is greater than minScale", {
                  minScale=0.01)
     expect_error(isValid(view))
 })
+
+### Test mriRenderer(mri)
+
+mri <- brcbase::buildBrcFmri(data2d=matrix(1:16, nrow=2, ncol=8),
+                             dim3d=c(2, 2, 2))
+
+test_that("it returns a function that renders an MRI", {
+    render <- renderer(mri)
+    expect_true(is.function(render))
+})
