@@ -1,4 +1,4 @@
-View <- function(center, maxCenter, scale, minScale, selectedView="coronal") {
+View <- function(center, maxCenter, scale, minScale, selectedView) {
     structure(list(center=center, maxCenter=maxCenter,
                    scale=scale, minScale=minScale, selectedView=selectedView),
               class="View")
@@ -23,14 +23,25 @@ renderer.BrcFmri <- function(mri) {
     zlims <- c(min(arr), max(arr))
 
     function(view) {
+        grDevices::dev.hold()
+
         slices <- list(
             coronal=arr[ , view$center[2], , view$center[4]],
             sagittal=arr[view$center[1], , , view$center[4]],
             axial=arr[ , , view$center[3], view$center[4]]
         )
-        sideLengths <- view$maxCenter * view$scale
-        prismMin <- view$center - sideLengths / 2
-        prismMax <- view$center + sideLengths / 2
+        sideLengths <- (view$maxCenter[1:3] - 1) * view$scale
+        prismMin <- view$center[1:3] - (sideLengths / 2)
+        prismMin[4] <- view$center[4]
+        prismMax <- view$center[1:3] + (sideLengths / 2)
+        prismMax[4] <- view$center[4]
+
+        ## If prism is outside bounds, move it back
+        minOffset <- pmax(1 - prismMin, 0)
+        maxOffset <- pmin(view$maxCenter - prismMax, 0)
+
+        prismMin <- prismMin + maxOffset + minOffset
+        prismMax <- prismMax + maxOffset + minOffset
 
         graphics::par(mfrow=c(2, 2),
                       bg="black",
@@ -41,7 +52,6 @@ renderer.BrcFmri <- function(mri) {
                       fg="white")
         titleColors <- list(coronal="white", sagittal="white", axial="white")
         titleColors[[view$selectedView]] <- "red"
-        print(titleColors)
 
         ## Render coronal slice
         xlims <- c(prismMin[1], prismMax[1])
@@ -56,7 +66,7 @@ renderer.BrcFmri <- function(mri) {
         xlims <- c(prismMin[2], prismMax[2])
         ylims <- c(prismMin[3], prismMax[3])
         .drawImage(slices[["sagittal"]], xlims, ylims, zlims)
-        graphics::title("Sagittal", col=titleColors$sagittal)
+        graphics::title("Sagittal", col.main=titleColors$sagittal)
         .drawCrossHairs(view$center[2], view$center[3])
         .drawDirectionLabels(right="A", top="S", left="P", bottom="I",
                              xlims=xlims, ylims=ylims)
@@ -65,10 +75,12 @@ renderer.BrcFmri <- function(mri) {
         xlims <- c(prismMin[1], prismMax[1])
         ylims <- c(prismMin[2], prismMax[2])
         .drawImage(slices[["axial"]], xlims, ylims, zlims)
-        graphics::title("Axial", col=titleColors$axial)
+        graphics::title("Axial", col.main=titleColors$axial)
         .drawCrossHairs(view$center[1], view$center[2])
         .drawDirectionLabels(right="L", top="A", left="R", bottom="P",
                              xlims=xlims, ylims=ylims)
+
+        invisible(grDevices::dev.flush())
     }
 }
 
