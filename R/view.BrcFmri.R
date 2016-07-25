@@ -1,3 +1,46 @@
+view <- function(obj) UseMethod("view")
+
+view.BrcFmri <- function(obj) {
+    ## Ugly hack because R doesn't support event handling for cairo
+    os <- Sys.info()["sysname"]
+    if (os == "Linux" || os == "Darwin") {
+        grDevices::X11(type="Xlib")
+    }
+
+    view <- defaultView(obj)
+    render <- renderer(mri)
+    render(view)
+
+    onKeybd <- function(key) {
+        ## We can't use a switch statment here because of special characters
+        f <- identity
+
+        if (key == "a" || key == "A" ) {
+            f <- selectAxial
+        } else if (key == "b" || key == "B") {
+            f <- stepBackward
+        } else if (key == "c" || key == "C") {
+            f <- selectCoronal
+        } else if (key == "f" || key == "F") {
+            f <- stepForward
+        } else if (key == "s" || key == "S") {
+            f <- selectSagittal
+        } else if (key == "=" || key == "+") {
+            f <- zoomIn
+        } else if (key == "-" || key == "_") {
+            f <- zoomOut
+        }
+
+        print(key)
+        view <<- f(view)
+        render(view)
+        NULL
+    }
+
+    setGraphicsEventHandlers(onKeybd=onKeybd)
+    getGraphicsEvent()
+}
+
 View <- function(center, maxCenter, scale, minScale, selectedView) {
     structure(list(center=center, maxCenter=maxCenter,
                    scale=scale, minScale=minScale, selectedView=selectedView),
@@ -67,7 +110,7 @@ renderer.BrcFmri <- function(mri) {
         ylims <- c(prismMin[3], prismMax[3])
         .drawImage(slices[["sagittal"]], xlims, ylims, zlims)
         graphics::title("Sagittal", col.main=titleColors$sagittal)
-        .drawCrossHairs(view$center[2], view$center[3])
+        .drawCrossHairs(view$center[3], view$center[2])
         .drawDirectionLabels(right="A", top="S", left="P", bottom="I",
                              xlims=xlims, ylims=ylims)
 
@@ -76,7 +119,7 @@ renderer.BrcFmri <- function(mri) {
         ylims <- c(prismMin[2], prismMax[2])
         .drawImage(slices[["axial"]], xlims, ylims, zlims)
         graphics::title("Axial", col.main=titleColors$axial)
-        .drawCrossHairs(view$center[1], view$center[2])
+        .drawCrossHairs(view$center[2], view$center[1])
         .drawDirectionLabels(right="L", top="A", left="R", bottom="P",
                              xlims=xlims, ylims=ylims)
 
@@ -110,8 +153,12 @@ renderer.BrcFmri <- function(mri) {
     ymin <- ylims[1]
     ymax <- ylims[2]
 
-    graphics::text(xmax, ymax/2, right, col="white", pos=4, xpd=NA)
-    graphics::text(xmax/2, ymax, top, col="white", pos=3, xpd=NA)
-    graphics::text(xmin, ymax/2, left, col="white", pos=2, xpd=NA)
-    graphics::text(xmax/2, ymin, bottom, col="white", pos=1, xpd=NA)
+    graphics::text(xmax, ymin + (ymax - ymin)/2, right, col="white",
+                   pos=4, xpd=NA)
+    graphics::text(xmin + (xmax - xmin)/2, ymax, top, col="white",
+                   pos=3, xpd=NA)
+    graphics::text(xmin, ymin + (ymax - ymin)/2, left, col="white",
+                   pos=2, xpd=NA)
+    graphics::text(xmin + (xmax - xmin)/2, ymin, bottom, col="white",
+                   pos=1, xpd=NA)
 }
