@@ -8,7 +8,7 @@ view.BrcFmri <- function(obj) {
     }
 
     view <- defaultView(obj)
-    render <- renderer(mri)
+    render <- renderer(obj)
     render(view)
 
     onKeybd <- function(key) {
@@ -37,8 +37,8 @@ view.BrcFmri <- function(obj) {
         NULL
     }
 
-    setGraphicsEventHandlers(onKeybd=onKeybd)
-    getGraphicsEvent()
+    grDevices::setGraphicsEventHandlers(onKeybd=onKeybd)
+    grDevices::getGraphicsEvent()
 }
 
 View <- function(center, maxCenter, scale, minScale, selectedView) {
