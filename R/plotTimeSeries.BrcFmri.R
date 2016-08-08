@@ -4,11 +4,13 @@ plotTimeSeries.BrcFmri <- function(x, xlim, ylim, zlim, same.screen = TRUE){
   
 }
 
-.extractBoundingBox <- function(x, xlim, ylim, zlim){
-  
+.extractColumnsFromMri <- function(mri, xlim, ylim, zlim){
+  idx.3d <- .convertVoxel3DGridto2D(mri$parcellation$dim3d, xlim, ylim, zlim)
+  idx.col <- unique(as.numeric(mri$parcellation$partition[idx.3d]))
+  mri$data2d[,idx.col]
 }
 
-.removeZeroTimeSeries <- function(x){
+.removeZeroTimeSeries <- function(mat){
   
 }
 
@@ -20,7 +22,7 @@ plotTimeSeries.BrcFmri <- function(x, xlim, ylim, zlim, same.screen = TRUE){
   xseq <- xlim[1]:xlim[2]; yseq <- ylim[1]:ylim[2]; zseq <- zlim[1]:zlim[2]
   voxel.mat <- expand.grid(xseq, yseq, zseq)
   
-  sort(apply(voxel.mat, 1, .convertVoxel3Dto2D, dim3d = dim3d))
+  unique(sort(apply(voxel.mat, 1, .convertVoxel3Dto2D, dim3d = dim3d)))
 }
 
 .convertVoxel3Dto2D <- function(dim3d, vec){
