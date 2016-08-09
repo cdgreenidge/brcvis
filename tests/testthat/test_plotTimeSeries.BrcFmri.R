@@ -43,7 +43,7 @@ test_that("it returns all the idx correctly",{
 
 ## Test .extractColumnsFromMri
 
-test_that("it returns the first time series", {
+test_that("it returns the correct single time series", {
   expect_true(all(.extractColumnsFromMri(mri, c(1,1), c(1,1), c(1,1)) ==
                     mri$data2d[,1]))
   
@@ -55,4 +55,67 @@ test_that("it returns the first time series", {
   
   expect_true(all(.extractColumnsFromMri(mri, c(1,1), c(2,2), c(1,1)) ==
                     mri$data2d[,3]))
+})
+
+test_that("it returns all the time series", {
+  mat <- .extractColumnsFromMri(mri, c(1,2), c(1,2), c(1,2)) 
+  expect_true(ncol(mat) == 8)
+  expect_true(nrow(mat) == 10)
+})
+
+
+#######
+
+## .removeZeroTimeSeries()
+
+test_that("it removes zero columns successfully", {
+  mat <- cbind(matrix(1, 5, 5), 0)
+  expect_true(all(.removeZeroTimeSeries(mat)[,1] == 1))
+})
+
+test_that("it does not drop columns when there is only one column", {
+  mat <- cbind(rep(1,5), rep(0,5))
+  mat2 <- .removeZeroTimeSeries(mat)
+  expect_true(is.matrix(mat2))
+  expect_true(all(mat2 == 1))
+})
+
+######
+
+dim3d <- c(3,4,5)
+mat <- matrix(rnorm(prod(dim3d)*3), ncol = prod(dim3d))
+partition <- factor(1:prod(dim3d))
+parcellation <- brcbase:::BrcParcellation(dim3d, partition)
+mri5 <- brcbase:::BrcFmri(data2d=mat, id="01", parcellation=parcellation)
+rm(list = c("mat", "dim3d", "partition", "parcellation"))
+
+## .checkTimeSeriesLim()
+
+test_that("errors for negative values flagged", {
+  expect_error(.checkTimeSeriesLim(mri5, c(0,2), 1))
+  expect_error(.checkTimeSeriesLim(mri5, c(-5,2), 1))
+  expect_error(.checkTimeSeriesLim(mri5, c(2,-5), 1))
+  expect_error(.checkTimeSeriesLim(mri5, c(-5,-5), 1))
+})
+
+test_that("errors for positive values exceeding mri flagged", {
+  expect_error(.checkTimeSeriesLim(mri5, c(1,10), 2))
+  expect_error(.checkTimeSeriesLim(mri5, c(10,3), 2))
+  expect_error(.checkTimeSeriesLim(mri5, c(10,15), 2))
+})
+
+test_that("errors for decimals/numeric flagged", {
+  expect_error(.checkTimeSeriesLim(mri5, c(2.3,4), 2))
+  expect_error(.checkTimeSeriesLim(mri5, c("1","3"), 2))
+})
+
+test_that("errors for decreasing vector flagged", {
+  expect_error(.checkTimeSeriesLim(mri5, c(4,2), 2))
+})
+
+test_that("no arguments is properly filled in", {
+  expect_true(all(.checkTimeSeriesLim(mri5, 3, 2) == c(3,3)))
+  expect_true(all(.checkTimeSeriesLim(mri5, NULL, 1) == c(1,3)))
+  expect_true(all(.checkTimeSeriesLim(mri5, NULL, 2) == c(1,4)))
+  expect_true(all(.checkTimeSeriesLim(mri5, NULL, 3) == c(1,5)))
 })
