@@ -1,5 +1,28 @@
-plotTimeSeries <- function(x, ...) UseMethod("plotTimeSeries")
+#' Generic Plotting for Time Series
+#'
+#' @param x the S3 object
+#' @param ... Arguments to be passed to methods, such as graphical parameters.
+#' @export
+plotTimeSeries <- function(x, ...) {UseMethod("plotTimeSeries")}
 
+#' Plotting Time Series for a BrcFmri Object
+#' 
+#' Creates plots of the time series at various voxels inside the BrcFmri object.
+#'
+#' @param x the BrcFmri object
+#' @param buffer a numeric determine the spacing between two time series in the plot. 
+#' Only used if same.screen = TRUE.
+#' @param same.screen a boolean to determine if all the time series are put on one plot
+#' or seperate plots
+#' @param xregion the direction along the first dimension of the BrcFmri data in 3-dimensions
+#' to dictate which voxels have their time series shown
+#' @param yregion the direction along the second dimension of the BrcFmri data in 3-dimensions
+#' to dictate which voxels have their time series shown
+#' @param zregion the direction along the third dimension of the BrcFmri data in 3-dimensions
+#' to dictate which voxels have their time series shown
+#' @param ... Arguments to be passed to plotting, such as graphical parameters.
+#'
+#' @export
 plotTimeSeries.BrcFmri <- function(x, buffer = NULL, same.screen = TRUE, 
                                    xregion = NULL, yregion = NULL, zregion = NULL, ...){
   if(class(x) != "BrcFmri") stop("x must be class BrcFmri")
