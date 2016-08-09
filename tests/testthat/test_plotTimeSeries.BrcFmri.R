@@ -73,6 +73,22 @@ test_that("it removes zero columns successfully", {
   expect_true(all(.removeZeroTimeSeries(mat)[,1] == 1))
 })
 
+test_that("errors if all 0", {
+  expect_error(.removeZeroTimeSeries(matrix(0,5,5)))
+})
+
+test_that("does not remove columns that are centered", {
+  mat <- matrix(rnorm(20),ncol = 4, nrow = 5)
+  mat <- scale(mat)
+  mat <- cbind(mat, 0)
+  expect_true(ncol(.removeZeroTimeSeries(mat)) == 4)
+})
+
+test_that("does not do anything if matrix does not have 0-columns", {
+  mat <- matrix(rnorm(20),ncol = 4, nrow = 5)
+  expect_true(ncol(.removeZeroTimeSeries(mat)) == 4)
+})
+
 test_that("it does not drop columns when there is only one column", {
   mat <- cbind(rep(1,5), rep(0,5))
   mat2 <- .removeZeroTimeSeries(mat)
@@ -118,4 +134,13 @@ test_that("no arguments is properly filled in", {
   expect_true(all(.checkTimeSeriesLim(mri5, NULL, 1) == c(1,3)))
   expect_true(all(.checkTimeSeriesLim(mri5, NULL, 2) == c(1,4)))
   expect_true(all(.checkTimeSeriesLim(mri5, NULL, 3) == c(1,5)))
+})
+
+###################
+
+## plotTimeSeries.BrcFmri()
+
+test_that("error if not BrcFmri class", {
+  expect_error(plotTimeSeries.BrcFmri(x$parcellation))
+  expect_error(plotTimeSeries.BrcFmri(matrix(1,5,5)))
 })

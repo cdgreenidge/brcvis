@@ -1,17 +1,47 @@
 plotTimeSeries <- function(x, ...) UseMethod("plotTimeSeries")
 
-plotTimeSeries.BrcFmri <- function(x, xlim = NULL, ylim = NULL, zlim = NULL, 
-                                   same.screen = TRUE){
-  xlim <- .checkTimeSeriesLim(x, xlim, 1)
-  ylim <- .checkTimeSeriesLim(x, ylim, 1)
-  zlim <- .checkTimeSeriesLim(x, zlim, 1)
+plotTimeSeries.BrcFmri <- function(x, buffer = NULL, same.screen = TRUE, 
+                                   xregion = NULL, yregion = NULL, zregion = NULL, ...){
+  if(class(x) != "BrcFmri") stop("x must be class BrcFmri")
   
-  mat <- .extractColumnsFromMri(x, xlim, ylim, zlim)
-  mat <- .removeZeroSlices(mat)
-  if(same.screen) mat <- scale(mat)
+  xregion <- .checkTimeSeriesLim(x, xregion, 1)
+  yregion <- .checkTimeSeriesLim(x, yregion, 1)
+  zregion <- .checkTimeSeriesLim(x, zregion, 1)
   
-  mat
+  if(is.null(buffer)) buffer <- stats::quantile(abs(x$data2d), 0.25)
+  if(!is.numeric(buffer) | length(buffer) != 1) stop("buffer must be a single numeric")
+  
+  mat <- .extractColumnsFromMri(x, xregion, yregion, zregion)
+  mat <- .removeZeroTimeSeries(mat)
+  if(same.screen) {
+    .plotTimeSeriesAll(mat, buffer, ...)
+  } else {
+    .plotTimeSeriesIndividual(mat, ...)
+  }
+  
+  invisible()
 }
+
+.plotTimeSeriesIndividual <- function(mat, ...){
+  layout <- .plotLayout(ncol(mat))
+  graphics::par(mfrow=c(layout$nrow, layout$ncol))
+  for(i in 1:ncol(mat)) graphics::plot(mat[,i], ...)
+  
+  invisible()
+}
+
+.plotTimeSeriesAll <- function(mat, buffer, ...){
+  mat <- scale(mat)
+  mat <- .spaceOutColumns(mat)
+  mat <- .shrinkColumnsTogether(mat, buffer)
+  
+  graphics::plot(NA, xlim = c(1,nrow(mat)), ylim = c(min(mat), max(mat)))
+  for(i in 1:ncol(mat)) graphics::lines(mat[,i], ...)
+  
+  invisible()
+}
+
+
 
 .checkTimeSeriesLim <- function(mri, vec, dim.idx){
   dim3d.val <- mri$parcellation$dim3d[dim.idx]
@@ -27,6 +57,28 @@ plotTimeSeries.BrcFmri <- function(x, xlim = NULL, ylim = NULL, zlim = NULL,
   vec
 }
 
+.spaceOutColumns <- function(mat){
+  d <- ncol(mat)
+  if(d == 1) return(mat)
+  
+  for(i in 2:d){
+    mat[,i] = max(abs(mat[,i-1])) + max(abs(mat[,i] - mat[,i-1])) + mat[,i]
+  }
+  
+  mat
+}
+
+.shrinkColumnsTogether <- function(mat, buffer){
+  d <- ncol(mat)
+  if(d == 1) return(mat)
+  
+  for(i in 2:d){
+    mat[,i] = mat[,i] - min(abs(mat[,i] - mat[,i-1])) + buffer
+  }
+  
+  mat
+}
+
 .extractColumnsFromMri <- function(mri, xlim, ylim, zlim){
   stopifnot(class(mri) == "BrcFmri")
   
@@ -38,7 +90,8 @@ plotTimeSeries.BrcFmri <- function(x, xlim = NULL, ylim = NULL, zlim = NULL,
 .removeZeroTimeSeries <- function(mat){
   stopifnot(is.matrix(mat))
   
-  idx <- which(apply(mat, 2, function(x){abs(sum(x))}) != 0)
+  idx <- which(apply(mat, 2, function(x){sum(abs(x))}) != 0)
+  if(length(idx) == 0) stop("mat contains no columns that are not all-0")
   mat[,idx,drop = FALSE]
 }
 
