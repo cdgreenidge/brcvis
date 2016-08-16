@@ -1,11 +1,12 @@
 context("Test plot3d.BrcParcellation.R")
 
 # Test plot3d.BrcParcellation()
-parcel <- brcbase::BrcParcellation(partition=factor(c(1, 1, 1, 1, 0, 0, 0, 0)),
+parcel <- brcbase::BrcParcellation(partition=c(1, 1, 1, 1, 0, 0, 0, 0),
                                    dim3d=c(2, 2, 2))
 
 test_that("it errors if x is an invalid BrcParcellation object", {
-  parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 3, 2))
+  parcel <- brcbase::BrcParcellation(partition=c(1:8), dim3d=c(2, 2, 2))
+  parcel$dim3d <- c(2,3,2)
   expect_error(p <- plot3d(parcel, numSlices=3), "invalid BrcParcellation object")
 })
 

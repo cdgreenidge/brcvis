@@ -16,7 +16,7 @@
 #' @export
 plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
                                  ...) {
-  numParcels <- .numParcels(x)
+  numPar <- brcbase::numParcels(x)
 
   tryCatch({ brcbase::isValid(x) }, error=function(e) {
     stop(paste("Tried to plot invalid BrcParcellation object: ", e))
@@ -32,10 +32,10 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   }
 
   if (is.null(colors)) {
-    colors <- .defaultColors(numParcels)
+    colors <- .defaultColors(numPar)
   } else if (!all(.isColor(colors))) {
     stop("color argument contains invalid colors")
-  } else if (.numParcels(x) != (length(colors) - 1)) {
+  } else if (brcbase::numParcels(x) != (length(colors) - 1)) {
     stop(paste("colors argument must contain 1 more color than the number ",
                "of parcels in the parcellation"))
   }
@@ -47,7 +47,7 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
   arr <- .removeZeroSlices(arr, dimension)
   indices <- .makeIndexSequence(max=dim(arr)[dimension], length=numSlices)
   slices <- .extractSlices(arr, indices, dimension)
-  invisible(.plotSlices(slices, numParcels(x), colors))
+  invisible(.plotSlices(slices, brcbase::numParcels(x), colors))
 }
 
 .isColor <- function(colors) {
@@ -61,12 +61,8 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
 }
 
 .parcellationToArray <- function(parcellation) {
-  data <- .factorToNumeric(parcellation$partition)
+  data <- parcellation$partition
   array(data=data, dim=parcellation$dim3d)
-}
-
-.factorToNumeric <- function(xs) {
-  as.numeric(levels(xs))[xs]
 }
 
 .removeZeroSlices <- function(arr, dim) {
@@ -93,11 +89,6 @@ plot.BrcParcellation <- function(x, numSlices, view="sagittal", colors=NULL,
 
 .extractSlices <- function(arr, indices, dim) {
   .splitAlongDim(arr, dim)[indices]
-}
-
-.numParcels <- function(parcellation) {
-  l <- levels(parcellation$partition)
-  length(l[l != 0])
 }
 
 .plotSlices <- function(slices, numParcels, colors) {

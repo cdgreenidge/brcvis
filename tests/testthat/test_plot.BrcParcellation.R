@@ -1,10 +1,11 @@
 context("Test plot.BrcParcellation.R")
 
 # Test plot.BrcParcellation()
-parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 2, 2))
+parcel <- brcbase::BrcParcellation(partition=c(1:8), dim3d=c(2, 2, 2))
 
 test_that("it errors if x is an invalid BrcParcellation object", {
-  parcel <- brcbase::BrcParcellation(partition=factor(1:8), dim3d=c(2, 3, 2))
+  parcel <- brcbase::BrcParcellation(partition=c(1:8), dim3d=c(2, 2, 2))
+  parcel$dim3d <- c(2,3,2)
   expect_error(p <- plot(parcel, numSlices=3), "invalid BrcParcellation object")
 })
 
@@ -53,28 +54,12 @@ test_that("it gives you one color for each parcel plus black", {
 # Test .parcellationToArray()
 
 dim3d <- c(2, 2, 2)
-partition <- factor(c(0, 0, 1, 1, 2, 2, 3, 3))
+partition <- c(0, 0, 1, 1, 2, 2, 3, 3)
 parcel <- brcbase::BrcParcellation(dim3d=dim3d, partition=partition)
 
 test_that("the dims of the array should be the dims of the parcellation", {
   arr <- .parcellationToArray(parcel)
   expect_equal(dim(arr), c(2, 2, 2))
-})
-
-# Test .factorToNumeric()
-
-test_that("it should convert the factor to a numeric vector", {
-  expect_equal(class(.factorToNumeric(factor(c(1, 2)))), "numeric")
-})
-
-test_that("the numbers should map to the factor levels", {
-  expect_equal(.factorToNumeric(factor(c(0, 2, 3))), c(0, 2, 3))
-})
-
-test_that("the values in the array correspond to the partition", {
-  arr <- .parcellationToArray(parcel)
-  expected <- array(c(0, 0, 1, 1, 2, 2, 3, 3), dim=c(2, 2, 2))
-  expect_equal(arr, expected)
 })
 
 # test .removeZeroSlices()
@@ -135,13 +120,6 @@ test_that("it should contain elements whose dimensions are one less than arr", {
 test_that("it contains the slices corresponding to the indices", {
   slices <- .extractSlices(arr=arr, indices=c(2, 3), dim=2)
   expect_equal(slices, .splitAlongDim(arr, 2)[2:3])
-})
-
-# test .numParcels()
-test_that("it gets the number of unique parcels in a parcellation", {
-  partition <- factor(c(0, 0, 1, 2, 3, 4, 5, 6))
-  parcellation <- brcbase::BrcParcellation(dim=c(2, 2, 2), partition=partition)
-  expect_equal(.numParcels(parcellation), 6)
 })
 
 # test .plotLayout()

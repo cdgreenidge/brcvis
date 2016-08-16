@@ -24,17 +24,17 @@ plot3d <- function(x, ...) UseMethod("plot3d")
 #'   used.
 #' @param ... not used
 plot3d.BrcParcellation <- function(x, view="sagittal", colors=NULL, ...) {
-  numParcels <- .numParcels(x)
+  numPar <- brcbase::numParcels(x)
 
   tryCatch({ brcbase::isValid(x) }, error=function(e) {
     stop(paste("Tried to plot invalid BrcParcellation object: ", e))
   })
 
   if (is.null(colors)) {
-    colors <- .defaultColors(numParcels)
+    colors <- .defaultColors(numPar)
   } else if (!all(.isColor(colors))) {
     stop("color argument contains invalid colors")
-  } else if (.numParcels(x) != (length(colors) - 1)) {
+  } else if (brcbase::numParcels(x) != (length(colors) - 1)) {
     stop(paste("colors argument must contain 1 more color than the number ",
                "of parcels in the parcellation"))
   }

@@ -2,14 +2,15 @@ language: r
 
 cache: packages
 
+before_install:
+    - Rscript -e 'install.packages(c("devtools", "testthat"))'
+    - Rscript -e 'devtools::install_github("cdgreenidge/brcbase", ref = "kevin")'
+
 r_binary_packages:
     - covr
     - ks
     - oro.nifti
     - rgl
-
-r_github_packages:
-    - cdgreenidge/brcbase
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
